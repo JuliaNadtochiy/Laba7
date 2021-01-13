@@ -3,15 +3,36 @@ package com.julia;
 public class Customer extends Person {
 
     private String email;
-    private CustomerType customerType;
+    private Type type;
     private Account account;
-    private double companyOverdraftDiscount = 1;
 
+    private class Type {
+        private CustomerType customerType;
+        private double overdraftDiscount;
+        private double dividerPremium;
+
+        public Type(CustomerType type, double overdraftDiscount, double dividerPremium) {
+            customerType = type;
+            this.overdraftDiscount = overdraftDiscount;
+            this.dividerPremium = dividerPremium;
+        }
+        public double getOverdraftDiscount() {
+            return overdraftDiscount;
+        }
+
+        public double getDividerPremium() {
+            return dividerPremium;
+        }
+
+        public CustomerType getCustomerType() {
+            return customerType;
+        }
+    }
     public Customer(String name, String surname, String email, CustomerType customerType, Account account) {
         this.name = name;
         this.surname = surname;
         this.email = email;
-        this.customerType = customerType;
+        this.type = new Type(customerType, 1, 1);
         this.account = account;
     }
 
@@ -19,9 +40,8 @@ public class Customer extends Person {
     public Customer(String name, String email, Account account, double companyOverdraftDiscount) {
         this.name = name;
         this.email = email;
-        this.customerType = CustomerType.COMPANY;
+        this.type = new Type(CustomerType.COMPANY, companyOverdraftDiscount, 2);
         this.account = account;
-        this.companyOverdraftDiscount = companyOverdraftDiscount;
     }
 
     public void withdraw(double sum, String currency) {
@@ -35,7 +55,7 @@ public class Customer extends Person {
         }
     }
     private void calculate(double sum, int i) {
-        switch (customerType) {
+        switch (type.customerType) {
             case COMPANY:
                 extractedCompany(sum, i);
                 break;
@@ -52,7 +72,7 @@ public class Customer extends Person {
     private void extractedCompany(double sum, int kof) {
         if (account.getMoney() < 0) {
             // 50 percent discount for overdraft for premium account
-            account.setMoney((account.getMoney() - sum) - sum * account.overdraftFee() * companyOverdraftDiscount / kof);
+            account.setMoney((account.getMoney() - sum) - sum * account.overdraftFee() * type.getOverdraftDiscount() / kof);
         } else {
             account.setMoney(account.getMoney() - sum);
         }
@@ -68,11 +88,15 @@ public class Customer extends Person {
     }
 
     public CustomerType getCustomerType() {
-        return customerType;
+        return type.customerType;
     }
 
     public void setCustomerType(CustomerType customerType) {
-        this.customerType = customerType;
+        this.type.customerType = customerType;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     public String printCustomerDaysOverdrawn() {
