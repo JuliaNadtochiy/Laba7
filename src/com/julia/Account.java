@@ -8,16 +8,14 @@ public class Account {
 
     private int daysOverdrawn;
 
-    private double money;
-
-    private String currency;
-
-    private Customer customer;
+    Money money;
+    Customer customer;
 
     public Account(AccountType type, int daysOverdrawn) {
         super();
         this.type = type;
         this.daysOverdrawn = daysOverdrawn;
+        money = new Money();
     }
 
     public double bankcharge() {
@@ -59,14 +57,6 @@ public class Account {
         this.iban = iban;
     }
 
-    public void setMoney(double money) {
-        this.money = money;
-    }
-
-    public double getMoney() {
-        return money;
-    }
-
     public Customer getCustomer() {
         return customer;
     }
@@ -84,20 +74,20 @@ public class Account {
     }
 
     public String getCurrency() {
-        return currency;
+        return money.getCurrency();
     }
 
     public void setCurrency(String currency) {
-        this.currency = currency;
+        this.money.currency = currency;
     }
 
     public String printCustomerAccount(Customer customer) {
         return "Account: IBAN: " + getIban() + ", Money: "
-                + getMoney() + ", Account type: " + getType();
+                + money.getMoney() + ", Account type: " + getType();
     }
 
     public void withdraw(double sum, String currency) {
-        if (!getCurrency().equals(currency)) {
+        if (!money.getCurrency().equals(currency)) {
             throw new RuntimeException("Can't extract withdraw " + currency);
         }
         if (getType().isPremium()) {
@@ -122,12 +112,22 @@ public class Account {
     }
 
     private void extractedCompany(double sum, int kof) {
-        if (getMoney() < 0) {
+        if (money.getMoney() < 0) {
             // 50 percent discount for overdraft for premium account
-            setMoney((getMoney() - sum) - sum * overdraftFee() * customer.getType().getOverdraftDiscount() / kof);
+            money.setMoney((money.getMoney() - sum) - sum * overdraftFee() * customer.getType().getOverdraftDiscount() / kof);
         } else {
-            setMoney(getMoney() - sum);
+            money.setMoney(money.getMoney() - sum);
         }
+    }
+    public String printCustomerDaysOverdrawn(Customer customer) {
+        String fullName = customer.fullName();
+
+        String accountDescription = "Account: IBAN: " + getIban() + ", Days Overdrawn: " + getDaysOverdrawn();
+        return fullName + accountDescription;
+    }
+
+    public double getMoney() {
+        return money.getMoney();
     }
 
 }
