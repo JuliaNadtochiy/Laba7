@@ -1,9 +1,7 @@
 package com.julia;
 
-public class Customer {
+public class Customer extends Person {
 
-    private String name;
-    private String surname;
     private String email;
     private CustomerType customerType;
     private Account account;
@@ -63,14 +61,6 @@ public class Customer {
     }
 
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -92,10 +82,6 @@ public class Customer {
 
         String accountDescription = "Account: IBAN: " + account.getIban() + ", Days Overdrawn: " + account.getDaysOverdrawn();
         return fullName + accountDescription;
-    }
-
-    private String fullName() {
-        return name + " " + surname + " ";
     }
 
     public String printCustomerMoney() {
