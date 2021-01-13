@@ -91,10 +91,43 @@ public class Account {
         this.currency = currency;
     }
 
-    @Override
-    public String toString() {
+    public String printCustomerAccount(Customer customer) {
         return "Account: IBAN: " + getIban() + ", Money: "
-                + getMoney() + ", Account type: " + getType()
-                ;
+                + getMoney() + ", Account type: " + getType();
     }
+
+    public void withdraw(double sum, String currency) {
+        if (!getCurrency().equals(currency)) {
+            throw new RuntimeException("Can't extract withdraw " + currency);
+        }
+        if (getType().isPremium()) {
+            calculate(sum, 2);
+        } else {
+            calculate(sum, 1);
+        }
+    }
+    private void calculate(double sum, int i) {
+        switch (customer.getCustomerType()) {
+            case COMPANY:
+                extractedCompany(sum, i);
+                break;
+            case PERSON:
+                extractPerson(sum);
+                break;
+        }
+    }
+    private void extractPerson(double sum) {
+        extractedCompany(sum, 1);
+
+    }
+
+    private void extractedCompany(double sum, int kof) {
+        if (getMoney() < 0) {
+            // 50 percent discount for overdraft for premium account
+            setMoney((getMoney() - sum) - sum * overdraftFee() * customer.getType().getOverdraftDiscount() / kof);
+        } else {
+            setMoney(getMoney() - sum);
+        }
+    }
+
 }

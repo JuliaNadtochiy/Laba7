@@ -4,9 +4,10 @@ public class Customer extends Person {
 
     private String email;
     private Type type;
-    private Account account;
+    Account account;
 
-    private class Type {
+
+    public class Type {
         private CustomerType customerType;
         private double overdraftDiscount;
         private double dividerPremium;
@@ -44,39 +45,6 @@ public class Customer extends Person {
         this.account = account;
     }
 
-    public void withdraw(double sum, String currency) {
-        if (!account.getCurrency().equals(currency)) {
-            throw new RuntimeException("Can't extract withdraw " + currency);
-        }
-        if (account.getType().isPremium()) {
-            calculate(sum, 2);
-        } else {
-            calculate(sum, 1);
-        }
-    }
-    private void calculate(double sum, int i) {
-        switch (type.customerType) {
-            case COMPANY:
-                extractedCompany(sum, i);
-                break;
-            case PERSON:
-                extractPerson(sum);
-                break;
-        }
-    }
-    private void extractPerson(double sum) {
-        extractedCompany(sum, 1);
-
-    }
-
-    private void extractedCompany(double sum, int kof) {
-        if (account.getMoney() < 0) {
-            // 50 percent discount for overdraft for premium account
-            account.setMoney((account.getMoney() - sum) - sum * account.overdraftFee() * type.getOverdraftDiscount() / kof);
-        } else {
-            account.setMoney(account.getMoney() - sum);
-        }
-    }
 
 
     public String getEmail() {
@@ -113,7 +81,4 @@ public class Customer extends Person {
         return fullName + accountDescription;
     }
 
-    public String printCustomerAccount() {
-        return account.toString();
-    }
 }
